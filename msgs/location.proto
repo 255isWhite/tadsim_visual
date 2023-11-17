@@ -1,0 +1,36 @@
+// See README.txt for information and build instructions.
+//
+// Note: START and END tags are used in comments to define sections used in
+// tutorials.  They are not part of the syntax for Protocol Buffers.
+//
+// To get an in-depth walkthrough of this file and the related examples, see:
+// https://developers.google.com/protocol-buffers/docs/tutorials
+
+// [START declaration]
+syntax = "proto3";
+
+import "basic.proto";
+
+package sim_msg;
+// [END declaration]
+
+// [START messages]
+	
+message Location { 
+	message EgoLane{
+    int64 lanepkid = 1;
+    uint64 sectionpkid = 2;
+    uint64 roadpkid = 3;
+    double dist_2_ref_line = 4; //distance between ego and reference line of lane, unit m
+  }
+
+  double t = 1;
+  Vec3 position = 2;	
+  Vec3 velocity = 3;	//in m/s
+  Vec3 angular = 4;		//angular veloctity ,rad/s
+  Vec3 rpy	= 5; 			//roll pitch yaw, in rad
+
+  Vec3 acceleration =6; //acceleration, unit m/s2
+  EgoLane ego_lane = 7;     //ego lane id info
+}
+// [END messages]

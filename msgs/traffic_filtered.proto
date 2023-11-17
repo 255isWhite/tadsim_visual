@@ -1,0 +1,14 @@
+// [START declaration]
+syntax = "proto3";
+import "traffic.proto";
+package sim_msg;
+// [END declaration]
+
+// [START messages]
+
+
+message TrafficFiltered
+{
+	map<int32, Traffic> traffic = 1;
+}
+// [END messages]

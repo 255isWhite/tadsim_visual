@@ -1,0 +1,50 @@
+// See README.txt for information and build instructions.
+//
+// Note: START and END tags are used in comments to define sections used in
+// tutorials.  They are not part of the syntax for Protocol Buffers.
+//
+// To get an in-depth walkthrough of this file and the related examples, see:
+// https://developers.google.com/protocol-buffers/docs/tutorials
+
+// [START declaration]
+syntax = "proto3";
+package sim_msg;
+// [END declaration]
+
+// [START messages]
+message RingPoint {
+  int32 valid = 1;  
+  int32 x = 2;
+  int32 y = 3;
+}
+
+
+message FreeSpaceRing {
+  repeated RingPoint elements = 1;
+}
+
+
+
+message Pointd
+{
+	double x = 1;
+	double y = 2;
+	int32 label = 3;
+}
+
+message GridUTM
+{
+	int64 timestamp = 1;
+	int32 nPointsNum = 2;
+	float fResolution = 3;
+	repeated Pointd pts = 4;
+}
+
+
+
+
+
+
+
+
+// [END messages]

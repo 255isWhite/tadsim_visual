@@ -1,0 +1,43 @@
+// See README.txt for information and build instructions.
+//
+// Note: START and END tags are used in comments to define sections used in
+// tutorials.  They are not part of the syntax for Protocol Buffers.
+//
+// To get an in-depth walkthrough of this file and the related examples, see:
+// https://developers.google.com/protocol-buffers/docs/tutorials
+
+// [START declaration]
+syntax = "proto3";
+package sim_msg;
+// [END declaration]
+
+// [START messages]
+message TrajectoryPoint {
+	double x = 1;
+	double y = 2;
+  double t = 3;
+  double v = 4;
+  double theta = 5;  
+  double kappa = 6;	
+	double s = 7;
+	double a = 8;	//acceleration, unit m/s2
+  double z = 9; // altitude
+}
+
+message Trajectory {
+  repeated TrajectoryPoint point = 1;
+  float	a = 2;
+  int32 type = 3;
+  int32 flag = 4;
+}
+
+message Prediction {
+  int64 id = 1;  
+  repeated TrajectoryPoint point = 2; //预测轨迹
+}
+
+message Predictions {
+  repeated Prediction obs = 1; //当前帧所有障碍物的预测轨迹
+}
+
+// [END messages]

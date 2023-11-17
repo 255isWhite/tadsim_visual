@@ -1,0 +1,144 @@
+syntax = "proto3";
+
+import "moduleService.proto";
+
+package sim_msg;
+
+enum CoreState {
+  UN_SETUP = 0;
+  SETUP = 1;
+  READY = 2;
+  INITIATED = 3;
+  SCENARIO_SET = 4;
+  RUNNING = 5;
+  MODULE_STOPPED = 6;
+  MODULE_ERROR = 7;
+  CORE_ERROR = 8;
+  UNKNOWN = 9;
+}
+
+enum Command {
+  INIT = 0;
+  RESET = 1;
+  STEP = 2;
+  RUN = 3;
+  PAUSE = 4;
+  STOP = 5;
+}
+
+service CoordinatorService {
+  rpc SetupCore (SetupConfig) returns (stream ModuleStatus);
+  
+  rpc UnsetupCore (UserInfo) returns (CoreStatus);
+
+  rpc RunCoreCommand (CoreCommand) returns (stream CommandStatus);
+
+  rpc LaunchCoreCommand (CoreCommand) returns (CoreStatus);
+
+  rpc PollCoreStatus (PollRequest) returns (PollResponse);
+
+  rpc OutputTopic (OutputInfo) returns (OutputResponse);
+}
+
+service ModuleManageService {
+  rpc LaunchModule (ModuleLaunchInfo) returns (stream Text);
+  
+  rpc ExitModule (ModuleId) returns (Text);
+}
+
+message PollRequest {
+}
+
+message PollResponse {
+  CoreStatus coreStatus = 1;
+  string gradingResult = 2;
+}
+
+message OutputInfo {
+  string mqAddress = 1;
+  int32 jobId = 2;
+  int32 sceneId = 3;
+  bool stop = 4;
+}
+
+message OutputResponse {
+}
+
+message LogConfig {
+  uint32 logLevel = 1; // 0 for no send-backs to front-end, 1 for all, 2 for w&e, 3 for error only
+  string logDir = 2; // empty string for no local write.
+}
+
+message SetupConfig {
+  message ModuleConfig {
+    string name = 1;
+    double stepTime = 2; // in milliseconds
+    uint32 timeout = 3; // in milliseconds
+    oneof address {
+      string serviceEndpoint = 4; // remote endpoint of module service
+      string libPath = 5; // local path of shared library file
+    }
+    uint32 id = 6;
+    repeated uint32 in = 7;
+    repeated uint32 out = 8;
+    bool shadow = 9;
+  }
+  repeated ModuleConfig modules = 1;
+  double coreStepTime = 2; // in milliseconds
+  string userName = 3;
+  LogConfig logCfg = 4;
+  double heartbeatRate = 5; // in milliseconds, 0 for no heartbeat
+  double coreStepControlTime = 6; // in milliseconds, controls the sleep time in core step function
+  uint32 max_scenario_timeout = 7; // max time limit allowed to run for a single scenario
+}
+
+message CoreStatus {
+  message CoreLog {
+    double timeStamp = 1; // in milliseconds since epoch
+    string moduleName = 2;
+    oneof log {
+      string info = 3;
+      string error = 4;
+      string warning = 5;
+    }
+  }
+  CoreState state = 1;
+  repeated CoreLog logs = 2;
+}
+
+message UserInfo {
+  string userName = 1;
+}
+
+message CoreCommand {
+  Command command = 1;
+  ResetParams resetParams = 2;
+  repeated InitParams moduleInitParams = 3;
+}
+
+message CommandStatus {
+  repeated double moduleStepTimeCosts = 1; // in milliseconds
+  double stepTimeCost = 2; // in milliseconds
+  CoreStatus coreStatus = 3;
+  SimMessage simMessages = 4; // optional, used for desktop visualizer
+}
+
+message ModuleLaunchInfo {
+  ModuleId mid = 1;
+  string path = 2;
+  string args = 3;
+  LogConfig logCfg = 4;
+}
+
+message Text {
+  string str = 1;
+}
+
+message ModuleId {
+  string name = 1;
+}
+
+message ModuleStatus {
+  repeated bool isSetup = 1;
+  CoreState state = 2;
+}

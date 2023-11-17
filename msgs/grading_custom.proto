@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package sim_msg;
+
+message GradingSAIC {
+  int32 road_follow_error = 1;  // unit: cm
+  double distance_to_stop = 2;  // unit: m
+  double trailer_angle = 3;  // unit: rad
+}

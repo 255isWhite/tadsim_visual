@@ -1,0 +1,14 @@
+// [START declaration]
+syntax = "proto3";
+package sim_msg;
+// [END declaration]
+
+// [START messages]
+message Image
+{
+    string format = 1;
+    double timestamp = 2;
+    int32 device_id = 5;
+    bytes image_data = 7;
+}
+// [END messages]

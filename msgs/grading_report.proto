@@ -1,0 +1,130 @@
+// [START declaration]
+syntax = "proto3";
+
+package sim_msg;
+// [END declaration]
+
+message TestReport{
+    //state of test step or test case
+    enum TestState{
+        UN_DEFINED = 0;
+        PASS = 1;
+        SKIPPED = 2;
+        FAIL = 3;
+    }
+    message TestResult{
+        TestState state = 1;    //state
+        string reason = 2;      //reason of state
+        double score = 3;       //eval score
+        double grade = 4;       //grade of eval
+        repeated PairData additional = 100;   //additional information, like score or star, feel free to add
+    }
+    //report date
+    message TestDate{
+        double start_second = 1;         //report date, unit second
+        double end_second = 2;           //report date, unit second
+        double duration_second = 3;      //duration, unit second
+    }
+    //pair data 
+    message PairData{
+        string key = 1;
+        string value = 2;
+    }
+    //xlsx sheet
+    message XlsxSheet{
+        enum SheetDataType{
+            Column_Sheet = 0;
+            Row_Sheet = 1;
+        }
+        message SheetData{
+            string header = 1;              //name of row/column 
+            repeated string data = 2;        //one row/column data
+        }
+        string name = 1;                    //sheet name
+        string description = 2;             //sheet description
+        repeated SheetData sheet_data = 3;  //sheet data
+        SheetDataType type = 4;             //row/column data sheet
+    }
+    //x-y plot, y axis data(support multiple axis)
+    message XYPlot{
+        message Axis{
+            string name = 1;                    //name of axis
+            string unit = 2;                    //unit of axis
+            repeated double axis_data = 3;      //axis data
+        }
+        string  name = 1;           //plot name
+        string  description = 2;    //plot description
+        Axis    x_axis = 3;         //x axis data
+        repeated Axis y_axis = 4;   //y axis data(support multiple axis)
+    }
+    //attach data
+    message Attach{
+        string name = 1;                         //attach name
+        string description = 2;                  //attach description
+        repeated PairData    pair_data  = 3;     //pair data
+        repeated XlsxSheet   sheet_data = 4;     //sheet data
+        repeated XYPlot      xyplot = 5;         //xyplot data
+    }
+    //category
+    message Category{
+        string level1 = 1;
+        string level2 = 2;
+        repeated string levels = 3;
+    }
+    //step info
+    message StepInfo {
+        string name = 1;        //step name
+        TestResult result = 2;  //step state
+        string reason = 3;      //reason of state
+        string desc = 4;        //case description
+        repeated PairData additionals = 100;   //step additional information
+    }
+    //test step, base unit of Case
+    message Step {
+        StepInfo info = 1;                      //step info
+        repeated Attach attach = 5;    //step attach data
+    }
+    //KPI info
+    message CaseInfo {
+        string name = 1;        //name
+        TestResult result = 2;  //eval state
+        string desc = 3;        //description
+        Category category = 4;  //category of kpi
+        double thresh = 5;      //thresh value 
+        repeated PairData additionals = 100;   //kpi eval additional information
+    }
+    //Case, also can be used as one KPI
+    message Case{
+        CaseInfo info = 1;               //case info
+        repeated Step steps = 3;         //case exec steps
+    }
+    //report info, also can be used as one scenario
+    message ReportInfo {
+        string report_id = 1;   //report id
+        string scene_name = 2;  //scene name
+        string scene_id = 3;    //scene id
+        string scene_desc = 4;  //scene description
+        TestDate date = 5;      //report date
+        double mileage = 6;     //mileage, unit km
+        TestResult result = 7;  //eval result
+        XlsxSheet module_cfg = 8;   //module configs
+        repeated PairData additionals = 100;   //report additional information
+    }
+    //report summary
+    message Summary{
+        int32 case_size = 1;
+        int32 case_undefined_size = 2;
+        int32 case_pass_size = 3;
+        int32 case_skipped_size = 4;
+        int32 case_fail_size = 5;
+        XlsxSheet case_summary = 6;
+    }
+    //report, also can be used as one scenario
+    message Report {
+        ReportInfo info = 1;                //report info
+        Summary summary = 2;                //report summary
+        repeated Case cases = 3;            //kpi list
+    }
+    Report report = 1;          //report
+    repeated XYPlot meta = 2;   //meta data
+}

@@ -1,0 +1,40 @@
+// See README.txt for information and build instructions.
+//
+// Note: START and END tags are used in comments to define sections used in
+// tutorials.  They are not part of the syntax for Protocol Buffers.
+//
+// To get an in-depth walkthrough of this file and the related examples, see:
+// https://developers.google.com/protocol-buffers/docs/tutorials
+
+// [START declaration]
+syntax = "proto3";
+package sim_msg;
+// [END declaration]
+
+// [START messages]
+enum ParkingType
+{
+  TYPE_NORMAL = 0;
+}
+
+message ParkingPoint {
+  double x = 1;  
+  double y = 2;
+  double z = 3;
+}
+
+
+message Parking {
+  ParkingType type = 1;  
+  ParkingPoint lb = 2;//left bottom
+  ParkingPoint lt = 3;//left top
+  ParkingPoint rt = 4;//right top
+  ParkingPoint rb = 5;//right bottom
+}
+
+
+message ParkingSpace {
+  double t = 1;
+  repeated Parking elements = 2;
+}
+// [END messages]

@@ -1,0 +1,159 @@
+// See README.txt for information and build instructions.
+//
+// Note: START and END tags are used in comments to define sections used in
+// tutorials.  They are not part of the syntax for Protocol Buffers.
+//
+// To get an in-depth walkthrough of this file and the related examples, see:
+// https://developers.google.com/protocol-buffers/docs/tutorials
+
+// [START declaration]
+syntax = "proto3";
+
+package sim_msg.xil;
+
+message Empty{
+}
+
+message Vec3{
+	double x = 1;
+	double y = 2;
+	double z = 3;
+}
+
+message RPCState{
+	bool _success = 1;
+}
+
+//XIL Mode
+enum XILMode{
+	MIL = 0;
+	SIL = 1;
+	HIL = 2;
+}
+
+message XILInterface {
+	/* vendor related infomation */
+	message Vendor{
+		//vendor type
+		enum VendorType{
+			CONCURRENT = 0;
+			DSPACE = 1;
+			NationalInstrument = 2;
+		}
+
+		message VendorCfg{
+			/* vendor concurrent */
+			message Concurrent{	
+				string 	user_name = 1;		//user name of RTPC
+				string	passwd = 2;			//passwd of RTPC
+				string	project_id = 3;		//project id in SimWB provided by concurrent
+				string	session_id = 4;		//session id in SimWB provided by concurrent
+				string	test_id = 5;		//test id in SimWB provided by concurrent
+			}
+
+			/* vendor dSPACE */
+			message dSPACE{
+				string 	project_id = 1;		//project id in CDNG provided by dSPACE
+				string	experiment_id = 2;	//experiment id in CDNG provided by dSPACE
+			}
+
+			/* vendor NI */
+			message NationalInstrument{
+				string 	project_id = 1;		//project id i
+				string	experiment_id = 2;	//experiment id
+			}
+
+			Concurrent ccur_cfg = 1;
+			dSPACE  dspace_cfg = 2;
+			NationalInstrument ni_cfg = 3;
+		}
+
+		string 		vendor_name = 1;				//vendor name
+		string		vendor_software_version = 2;	//vendor software version
+		VendorType 	vendor_type = 3;				//vendor type
+		VendorCfg	vendor_cfg = 4;					//vendor config
+	}
+	
+	string eth_interface = 1;		//local PC ethernet interface name used to communicate with HIL
+	string xil_ip = 2;				//XIL service ip
+	uint32 xil_port = 3;			//XIL service port
+	uint32 xil_file_port =4;		//XIL file service port
+	Vendor vendor = 5;				//vendor information, only valid in HIL mode
+	XILMode mode = 6;
+}
+
+message XILState{
+	//connection state
+	enum XILComState{
+		X_Online = 0;
+		X_Offline = 1;
+	}
+
+	//plant model state
+	enum PlantModelState{
+		MDLStopped = 0;
+		MDLReset = 1;
+		MDLRunning = 2;
+	}
+
+	int32 t_ms  = 1;
+	XILComState com_state = 2;
+	PlantModelState plant_model_state = 3;
+}
+
+//used for file downloading in HIL mode, files like:.lic, .par, .sqlite, .xodr, etc.
+message FileHeader{
+    string file_name=1;
+    uint32 file_size=2;
+}
+
+message FileData{
+	FileHeader header = 1;
+	int32  block_index=2;
+	bytes  bytes_data=3;
+}
+
+//file transfer
+service FileService{
+	rpc NotifySendFile (FileHeader) returns (RPCState);
+	rpc SendBytes (FileData) returns (RPCState);
+	rpc IsFileSent (FileHeader) returns (RPCState);
+}
+
+//protobuf message map, topic and bytes data
+message MessageMap{
+	message MessagePair{
+		string topic = 1;
+		bytes payload = 2;
+	}
+
+	repeated MessagePair msg_map = 1;
+}
+
+//vehicle dynamics config
+message VDConfig{
+	string 	lic_file = 1;
+	string 	par_file = 2;
+	string 	map_file = 3;
+	string 	sensor_xml_file = 4;
+	Vec3	map_origin = 5;
+	uint32  step_time = 6;				//unit ms
+	bool 	enable_terrain = 7;
+	bool 	l3_run_type = 8;
+	bytes   start_location_payload = 9;
+
+}
+
+//services for vehicle dynamics
+service XILService{
+	rpc SetVDConfig (VDConfig) returns (RPCState);
+	rpc GetAllMessages (Empty) returns (MessageMap);
+	rpc SetMessageByTopic (MessageMap.MessagePair) returns (RPCState);
+	rpc InitVDModule (Empty) returns (XILState);
+	rpc ResetVDModule (Empty) returns (XILState);
+	rpc TriggerPlantModelRun (XILState) returns (XILState);
+	rpc StepVDModule (XILState) returns (XILState); //never use in HIL mode
+	rpc StopVDModule (Empty) returns (XILState);
+}
+
+// [END messages]

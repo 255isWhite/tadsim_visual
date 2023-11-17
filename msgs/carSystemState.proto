@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+import "header.proto";
+
+package sim_msg;
+
+message SystemState {
+  Header header = 1;
+  bool inside_map = 2;
+  bool has_leader_car = 3;
+  bool lane_marks_valid = 4;
+  uint32 leader_car_speed = 5;
+  int64 leader_car_id = 6;
+  uint32 state = 7;
+}
+

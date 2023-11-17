@@ -1,0 +1,99 @@
+syntax = "proto3";
+
+import "basic.proto";
+
+package sim_msg;
+
+
+// all expressed in unit m and rad
+message VehicleGeometory {
+
+  enum VehicleCoordType {
+    FrontAxle_SnappedToGround=0;
+    WheelBaseCenter_SnappedToGround=1;
+    RearAxle_SnappedToGround=2;
+    TrailerHitch_SnappedToGround=3;
+  }
+
+  // the scalar variable of vehicle geometory is relative to reference point
+  // for passenge vehicle, the reference point is WheelBaseCenter_SnappedToGround if not specified
+  // for trailer, the reference point is TrailerHitch_SnappedToGround if not specified
+  // all value should be equal or greater than 0
+  message VehicleGeometoryScalar {
+    double  ref_to_front_axle = 1;    // the vertical distance between the axle and the reference point.
+                                      // if there's more than 2 axles, it is the distance to the very first one.
+                                      // if there's no front axle, 0 would be filled.
+
+    double  ref_to_rear_axle = 2;     // see above.
+
+    double  front_axle_to_front = 3;  // the distance between the front axle and the front boundary of the bounding box.
+                                      // if there's more than 2 axles, it is the distance to the very first one.
+                                      // if there's no front axle, 0 would be filled.
+
+    double  rear_axle_to_rear = 4;    // see above.
+
+    double  wheel_base=5;             // the distance between the front and the rear axle.
+                                      // if there's more than 2 axles, it is the distance between the very first and the very last one.
+                                      // if there's no front axle, 0 would be filled.
+
+    double  length=6;                 // the length of the bounding box.
+
+    double  width=7;                  // see above.
+
+    double  height=8;                 // see above.
+
+    double track_width_front = 9;     // the distance between two wheel on the same axle.
+                                      // if there's no front axle, 0 would be filled.
+
+    double track_width_rear = 10;     // see above.
+  }
+
+  // the vector variable of vehicle geometory is relative to reference point
+  // the reference point must be set dynamically
+  // VehicleCoord is calculated accordingly
+  message PointInVehicleCoord {
+    Vec3 front_axle=1;                // the center point of the front axle.
+
+    Vec3 rear_axle=2;                 // see above.
+
+    Vec3 wheel_base_center=3;         // the center point of the plane which formed with the four center points of wheel.
+                                      // given assumption that the two wheels of same axle is on the same level(same z).
+                                      // if there's more than 2 axles, the very first and the very last one are considered.
+                                      // if there's no front axle, it is the center point of the rear axle.
+
+    Vec3 front=4;                     // the center point of the front boundary(snapped to ground) of the bounding box.
+
+    Vec3 rear=5;                      // see above.
+
+    Vec3 front_left=6;                // the left front point(snapped to ground) of the bounding box.
+
+    Vec3 front_right=7;               // see above.
+
+    Vec3 rear_left=8;                 // see above.
+
+    Vec3 rear_right=9;                // see above.
+
+    Vec3 ref_point=10;                // always (0, 0, 0)
+
+    Vec3 bounding_box_center = 11;
+  }
+
+  message WheelFour {
+    double front_left = 1;
+    double front_right = 2;
+    double rear_left = 3;
+    double rear_right = 4;
+  }
+
+  VehicleCoordType  coord_type=1; 
+  VehicleGeometoryScalar  vehicle_geometory=2;
+  PointInVehicleCoord   vehicle_coord=3;
+  WheelFour max_steering_radius = 4;  // [0, PI]
+  WheelFour wheel_diameter = 5;
+}
+
+message VehicleGeometoryList{
+  VehicleGeometory front = 1;
+  repeated VehicleGeometory trailer = 2;
+}
+
