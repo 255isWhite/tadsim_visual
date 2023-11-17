@@ -35,7 +35,7 @@
    
 2. 进入本地ROS工作空间下的/src文件夹，克隆visual示例并编译
     ```bash
-    git clone git@github.com:255isWhite/VisuaLidar.git
+    git clone git@github.com:255isWhite/tadsim_visual.git
     catkin_make -DCATKIN_WHITELIST_PKGS=tadsim_visual
     ```
 
