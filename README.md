@@ -48,6 +48,23 @@
     ## 在终端打开tadsim
     tadsim
     ```
+
+    Display配置
+    ```bash
+    # 完全关闭TAD Sim后再进行下述操作
+    cd /home/$USER/.config/tadsim/data/service_data/Display/Saved/Config/LinuxNoEditor
+    gedit Game.ini
+    ```
+    - 向Game.ini中加入以下内容（若不存在该文件，请成功运行一次Display模块后再尝试）
+    ```bash
+    [Sensor]
+    # 是否向外发送传感器数据
+    PublicMsg=true 
+    # 是否存储相机图像
+    # 若存储，路径为/home/$USER/.config/tadsim/data/service_data/Display/Saved/SensorData
+    CameraSaved=true
+    ```
+
     自定义模块
     - 模块名称：**CameraIO**
     - 可执行文件路径：功能包编译后生成的可执行文件，例如/home/robot/catkin_ws/devel/lib/tadsim_visual/camera_node
@@ -107,7 +124,7 @@
 
 <summary>动手实践</summary>
   
-- 通过任何途径获得一张未经矫正的相机原始图像，利用Matlab提供的相关工具进行相机内参标定[参考链接](https://cloud.tencent.com/developer/article/2080705)，得到内参矩阵和畸变参数，对比体会图像较正效果。
+- 通过任何途径获得一张未经矫正的相机原始图像，利用Matlab提供的相关工具进行相机内参标定[（参考链接）](https://cloud.tencent.com/developer/article/2080705)，得到内参矩阵和畸变参数，对比体会图像较正效果。
 
 </details>
 
