@@ -3,7 +3,7 @@
 <div align="center">
     <!-- an image which can properly describe this repository -->
     <!-- images are stored under .github/images -->
-    <img src=".github/images/top.png" width="850">
+    <img src=".github/images/cover.png" width="850">
     <p>
     腾讯TAD SIM自动驾驶仿真软件视觉仿真示例.
     </p>
@@ -36,28 +36,46 @@
 2. 进入本地ROS工作空间下的/src文件夹，克隆visual示例并编译
     ```bash
     git clone git@github.com:255isWhite/tadsim_visual.git
+    ## or 
+    git clone https://github.com/255isWhite/tadsim_visual.git
+    ```
+    ```
     catkin_make -DCATKIN_WHITELIST_PKGS=tadsim_visual
     ```
 
-3. 打开tadsim完成模块加载
-    <!-- ```bash
-    cd YOUR_GIT_PATH/VisuaLidar
-    ./build.sh
-    roscore&
-    rosrun VisuaLidar Mono_Inertial Vocabulary/ORBvoc.txt config/custom.yaml
-    ```
-
-4. Play your ROS bag and do not forget to remap the essential topics, for example
+3. 配置TAD Sim
     ```bash
-    rosbag play --pause imu_encoder_image.bag /usb_cam/image_raw:=/camera/image_raw /wit/imu:=/imu 
-    ``` -->
+    ## 在终端打开tadsim
+    tadsim
+    ```
+    自定义模块
+    - 模块名称：CameraIO
+    - 可执行文件路径：功能包编译后生成的可执行文件，例如/home/robot/catkin_ws/devel/lib/tadsim_visual/camera_node
+    - 依赖路径：["/lib/x86_64-linux-gnu","/opt/tadsim/resources/app/service/simdeps","/opt/ros/noetic/lib/"]
+    - 初始化参数：Height=1208（**手动换行**）Width=1920
+
+    模组配置
+    - 确保包含Display和CameraIO模块
+
+    主车配置
+    - 确保主车搭载摄像头，分辨率为1920*1208，建议摄像头位置(x,y,z)为(150,0,180)
+
+4. 接口运行
+
+    TAD Sim内选定场景点击运行，在下方终端内选择CameraIO选项卡，可以查看相关程序输出。
+    ```bash
+    rviz -d catkin_ws/src/tadsim_visual/config/image.rviz 
+    ```
+    此时在Rviz窗口内可以接收到话题为/tadsim_img的图像数据了，若未能成功，请检查上述步骤。
+
+
 
 </details>
 
 <details open>
-<summary>To Do List</summary>
+<summary>已知Bug</summary>
   
-- Add Docker usage
+- TAD Sim必须在终端内输入tadsim启动，否则会和ROS相关环境变量发生冲突
 
 
 </details>

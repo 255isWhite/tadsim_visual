@@ -1,6 +1,5 @@
 #pragma once
 #include "txsim_module.h"
-#include "MemoryIO.h"
 #include <string>
 #include <mutex>
 #include <limits.h>
@@ -11,6 +10,9 @@
 #include <sensor_msgs/Image.h>
 #include <cv_bridge/cv_bridge.h>
 #include <image_transport/image_transport.h>
+
+#include "sensor_raw.pb.h"
+#include "config.h"
 
 class CameraFun :
 	public tx_sim::SimModule
@@ -28,13 +30,13 @@ public:
 	ros::NodeHandle nh_;
 
 private:
-
-	SharedMemoryReader src_sim_;
-	int w=0, h=0;
+	std::string payload_;
+	int w_=0, h_=0;
 	cv::Mat cvImg_;
 
 	// imagetransport相关
 	image_transport::ImageTransport it_;
 	image_transport::Publisher pub_;
+	const std::string img_last_ = IMAGE_PATH+std::string("/last.jpg");
 };
 

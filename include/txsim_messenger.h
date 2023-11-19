@@ -74,6 +74,8 @@ const std::string kPlanStatus = "PLAN_STATUS";
 const std::string kPredictions = "PREDICTION";
 /// 仿真系统动态调整模块输出日志的等级，整数的字符串表示形式，模块输出的日志等级应小于等于该值。
 const std::string kLogLevel = "_LOG_LEVEL";
+/// sensor_raw.proto
+const std::string kSensor = "DISPLAYSENSOR_0";
 }  // namespace topic
 
 namespace constant {

@@ -15,6 +15,7 @@
 #include <image_transport/image_transport.h>
 #include <cv_bridge/cv_bridge.h>
 
+
 // std::ofstream of("cam.txt");
 // std::streambuf* cerr_buf = std::cerr.rdbuf(of.rdbuf());
   
@@ -30,44 +31,30 @@ CameraFun::CameraFun(const ros::NodeHandle& n):it_(n){
 
 void CameraFun::Init(tx_sim::InitHelper& helper)
 {
-	// get user defined initiation parameters.
-	// if we defined the parameters in TADSim UI, override the default values here.
-
-	// by subscribe our interested topics, we expect that the two corresponding messages which defined by
-	// traffic.proto and location.proto would received in every Step callback.
 	std::cerr << "Init...\n";
 	
 	
-	// 从ui得到SourceSim,Height,Width三个参数
-	std::string value = helper.GetParameter("SourceSim");
-	if (value.empty()) {
-		std::cerr << "Need sim camera address" << std::endl;
-		return;
-	}
-	std::cerr << "SourceSim = " << value << std::endl;
-	src_sim_.init(value, 10);
+	// 从ui得到图像的Height,Width
 
-	
-	value = helper.GetParameter("Width");
+	auto value = helper.GetParameter("Width");
 	if (value.empty()) {
 		std::cerr << "Need image width" << std::endl;
 		return;
 	}
-	w = std::atoi(value.c_str());
-	std::cerr << "Width = " << w << std::endl;
+	w_ = std::atoi(value.c_str());
+	std::cerr << "Width = " << w_ << std::endl;
 
 	value = helper.GetParameter("Height");
 	if (value.empty()) {
 		std::cerr << "Need image height" << std::endl;
 		return;
 	}
-	h = std::atoi(value.c_str());
-	std::cerr << "Height = " << h << std::endl;
-
-	// 一个制定大小，格式为8uc4的图像mat
-	cvImg_ = cv::Mat(h, w, CV_8UC4);
+	h_ = std::atoi(value.c_str());
+	std::cerr << "Height = " << h_ << std::endl;
 	
 	std::cerr << "Init ok.\n";
+
+	helper.Subscribe(tx_sim::topic::kSensor);
 
 }
 
@@ -76,35 +63,47 @@ void CameraFun::Reset(tx_sim::ResetHelper& helper) {
 	// here we could get some information(e.g. the map which the scenario runs on, suggested local origin coordinate
 	// and the destination of the ego car) of the current scenario.
 
-	
-	// 调用SharedMemoryReader类的reset()方法
-	src_sim_.reset();	
-
 	std::cerr << "Reset ok.\n";
 }
 
 void CameraFun::Step(tx_sim::StepHelper& helper) {
-	
-	std::vector<uint8_t> buffer_sim;
-		int64_t timestamp_sim;
-		// read()函数读取数据流
-		bool flag = !src_sim_.read(buffer_sim, timestamp_sim);
-		if (flag)
-		{	
-			// 读取不到数据的情况下输出
-			std::cerr << "Cannot read buffer" << std::endl;			
-			return;
-		}
-		std::cerr << "Timestamp[" << helper.timestamp() << "]: " << timestamp_sim << std::endl;
-		// 数据读取成功，将数组buffer_sim中的数据传递给Init()函数中定义的图像mat cvImg_；
-		memcpy(cvImg_.data, buffer_sim.data(), w * h * 4);
-		std::cerr<<"[Width]: "<<cvImg_.cols<<"\n[Height]: "<<cvImg_.rows \
-		<<"\n[Channels]: "<<cvImg_.channels()<<std::endl;
+	std::cerr << "[timestamp] "<<helper.timestamp() << "\n";
+	helper.GetSubscribedMessage(tx_sim::topic::kSensor, payload_);
 
-		// 发布话题
-		sensor_msgs::ImagePtr msg = cv_bridge::CvImage(std_msgs::Header(),"bgra8",cvImg_).toImageMsg();
-		msg->header.stamp = ros::Time::now();
-		pub_.publish(msg);
+	sim_msg::SensorRaw sensorraw;
+	if (payload_.empty() || !sensorraw.ParseFromString(payload_)){
+		std::cerr << "Cannot parse sensorraw" << std::endl;
+		return;
+	}
+	// std::cerr << " sensorraw.sensor length is :" << sensorraw.sensor().size() << std::endl;
+	
+	for(auto& sensor:sensorraw.sensor()){
+		if(sensor.type() == sim_msg::SensorRaw::TYPE_CAMERA){
+
+			sim_msg::CameraRaw camera;
+			if (!camera.ParseFromString(sensor.raw()))
+			{
+				std::cerr << "camera error";
+			}
+			std::cerr<<"[Camera] data type is "<<camera.type()<<std::endl;
+			        // Assuming camera type is JPEG
+        	if (camera.type() == "JPEG") {
+
+				std::fstream of(img_last_, std::ios::out | std::ios::binary);
+				of.write(camera.image_data().c_str(), camera.image_data().size());
+				of.close();
+
+				cvImg_ = cv::imread(img_last_, cv::IMREAD_COLOR);
+           		// Convert OpenCV image to ROS image message
+            	sensor_msgs::ImagePtr ros_image = cv_bridge::CvImage(std_msgs::Header(), "bgr8", cvImg_).toImageMsg();
+
+            	// Publish the ROS image message
+            	pub_.publish(ros_image);
+
+            	std::cerr << "[ROS] Publish image success" << std::endl;
+			}
+		}
+	}
 }
 
 void CameraFun::Stop(tx_sim::StopHelper& helper) {

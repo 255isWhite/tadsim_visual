@@ -1,0 +1,4 @@
+// config.h.in
+
+#pragma once
+#define IMAGE_PATH "@IMAGE_PATH@"

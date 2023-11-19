@@ -1,8 +1,0 @@
-syntax = "proto3";
-
-package sim_msg;
-
-message ScenarioInfo {
-    string scenario_path = 1;
-    string hadmap_path = 2;
-}
