@@ -94,6 +94,8 @@ void CameraFun::Step(tx_sim::StepHelper& helper) {
 				of.close();
 
 				cvImg_ = cv::imread(img_last_, cv::IMREAD_COLOR);
+				// 示例一：畸变矫正
+
            		// Convert OpenCV image to ROS image message
             	sensor_msgs::ImagePtr ros_image = cv_bridge::CvImage(std_msgs::Header(), "bgr8", cvImg_).toImageMsg();
 

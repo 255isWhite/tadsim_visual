@@ -49,7 +49,7 @@
     tadsim
     ```
     自定义模块
-    - 模块名称：CameraIO
+    - 模块名称：**CameraIO**
     - 可执行文件路径：功能包编译后生成的可执行文件，例如/home/robot/catkin_ws/devel/lib/tadsim_visual/camera_node
     - 依赖路径：["/lib/x86_64-linux-gnu","/opt/tadsim/resources/app/service/simdeps","/opt/ros/noetic/lib/"]
     - 初始化参数：Height=1208（**手动换行**）Width=1920
@@ -80,29 +80,37 @@
 
 </details>
 
-<!-- <details off>
-<summary>Anything you wanna add here</summary>
-Some descriptions for this.
-
-</details>
-
-## <div align="center">Anything you wanna add here</div>
+## <div align="center">示例1：深入了解相机畸变模型</div>
+<!-- setting details to open will display all below  -->
 <details open>
-<summary>Anything</summary>
+<summary>示例背景</summary>
+ 
+  - TAD Sim可以对相机模型进行仿真，包括相机的分辨率，及其对应的内参矩阵和畸变参数，因此我们可以自定义一个独特的的相机模型，并利用这些畸变参数体会相机的畸变矫正操作。
 
-<p>To be done</p>
-
+    <img src=".github/images/matrix.png" width="850">
 </details>
 
 <details open>
-<summary>Anything</summary>
-<p>To be done</p>
+
+<summary>快速上手</summary>
+  
+1. 修改主车搭载的相机模型的畸变参数（注意：不宜过大）,下图是(k1,k2,k3,p1,p2)为(-1,0.5,0.1,0.1,0.01)时，可以看出原始图像已有十分明显的畸变效果了。
+    <img src=".github/images/kp.jpg" width="850">
+
+2. 在**src/CameraFun.cc**中找到有关**示例一**的注释，利用已知的畸变参数，借助OpenCV库，对接收到的图像数据进行实时矫正并发布。
+
+3. 对比矫正前后的图像，体会图像矫正的必要性。(Tips: images/last.jpg为程序自动存储的接收到的最新一帧图像) 
+
 </details>
 
 <details open>
-<summary>Anything</summary>
-<p>To be done</p>
-</details> -->
+
+<summary>动手实践</summary>
+  
+- 通过任何途径获得一张未经矫正的相机原始图像，利用Matlab提供的相关工具进行相机内参标定[参考链接](https://cloud.tencent.com/developer/article/2080705)，得到内参矩阵和畸变参数，对比体会图像较正效果。
+
+</details>
+
 
 ## <div align="center">Contact</div>
 Welcome all questions in issues tag or if u wanna contact me at nocap.wzh@gmail.com
