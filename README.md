@@ -130,6 +130,38 @@
 
 </details>
 
+## <div align="center">示例2：多路相机环视感知</div>
+<!-- setting details to open will display all below  -->
+<details open>
+<summary>示例背景</summary>
+ 
+  - TAD Sim可以对自动驾驶主车添加任意数量的传感器，使得我们可以在仿真环境中搭建多路相机环视感知的主车模型，而这在现实场景中往往会受限于硬件成本而难以部署。
+
+    <img src=".github/images/four.png" width="850">
+</details>
+
+<details open>
+
+<summary>快速上手</summary>
+  
+1. 复制主车上已有的相机模型，将其拖动至主车上，调整其位置和朝向，如下图所示。
+    <img src=".github/images/back.png" width="850">
+
+2. 在**src/CameraFun.cc**中找到有关**示例二**的注释，探究双相机情况下的代码逻辑，对接收到的多路图像数据进行实时矫正并发布。
+
+3. 在Rviz中接收多路图像并显示。 
+    <img src=".github/images/all.png" width="850">
+
+</details>
+
+<details open>
+
+<summary>动手实践</summary>
+  
+- 通过查阅资料自学自动驾驶业界常用的BEV感知算法，尝试通过在TAD Sim中添加多路相机以运行BEV相关的demo。
+
+</details>
+
 
 ## <div align="center">Contact</div>
 Welcome all questions in issues tag or if u wanna contact me at nocap.wzh@gmail.com

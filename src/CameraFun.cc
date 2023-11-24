@@ -27,6 +27,7 @@ CameraFun::CameraFun():it_(ros::NodeHandle()){
 CameraFun::CameraFun(const ros::NodeHandle& n):it_(n){
 	std::cerr<<"with handle constructor\n";
 	pub_ = it_.advertise("tadsim_img",0);
+	// pub2_ = it_.advertise("tadsim_img2",0);
 }
 
 void CameraFun::Init(tx_sim::InitHelper& helper)
@@ -35,7 +36,6 @@ void CameraFun::Init(tx_sim::InitHelper& helper)
 	
 	
 	// 从ui得到图像的Height,Width
-
 	auto value = helper.GetParameter("Width");
 	if (value.empty()) {
 		std::cerr << "Need image width" << std::endl;
@@ -75,11 +75,12 @@ void CameraFun::Step(tx_sim::StepHelper& helper) {
 		std::cerr << "Cannot parse sensorraw" << std::endl;
 		return;
 	}
-	// std::cerr << " sensorraw.sensor length is :" << sensorraw.sensor().size() << std::endl;
+	//std::cerr << " sensorraw.sensor length is :" << sensorraw.sensor().size() << std::endl;
 	
+	// int camera_count = 0;
 	for(auto& sensor:sensorraw.sensor()){
 		if(sensor.type() == sim_msg::SensorRaw::TYPE_CAMERA){
-
+			// camera_count++;
 			sim_msg::CameraRaw camera;
 			if (!camera.ParseFromString(sensor.raw()))
 			{
@@ -109,7 +110,13 @@ void CameraFun::Step(tx_sim::StepHelper& helper) {
             	sensor_msgs::ImagePtr ros_image = cv_bridge::CvImage(std_msgs::Header(), "bgr8", cvImg_).toImageMsg();
 
             	// Publish the ROS image message
-            	pub_.publish(ros_image);
+				pub_.publish(ros_image);
+
+				// // 示例二：多路相机
+				// if(1==camera_count)
+            	// 	pub_.publish(ros_image);
+				// else if(2==camera_count)
+				// 	pub2_.publish(ros_image);
 
             	std::cerr << "[ROS] Publish image success" << std::endl;
 			}

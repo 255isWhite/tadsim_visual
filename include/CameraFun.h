@@ -38,6 +38,7 @@ private:
 	// imagetransport相关
 	image_transport::ImageTransport it_;
 	image_transport::Publisher pub_;
+	image_transport::Publisher pub2_;
 	const std::string img_last_ = IMAGE_PATH+std::string("/last.jpg");
 	const std::string img_raw_ = IMAGE_PATH+std::string("/raw.jpg");
 };
