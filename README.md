@@ -84,6 +84,7 @@
     rviz -d catkin_ws/src/tadsim_visual/config/image.rviz 
     ```
     此时在Rviz窗口内可以接收到话题为/tadsim_img的图像数据了，若未能成功，请检查上述步骤。
+    <img src=".github/images/rviz.png" width="850">
 
 
 
@@ -116,7 +117,8 @@
 
 2. 在**src/CameraFun.cc**中找到有关**示例一**的注释，利用已知的畸变参数，借助OpenCV库，对接收到的图像数据进行实时矫正并发布。
 
-3. 对比矫正前后的图像，体会图像矫正的必要性。(Tips: images/last.jpg为程序自动存储的接收到的最新一帧图像) 
+3. 对比矫正前后的图像，体会图像矫正的必要性。(Tips: images/raw.jpg为程序自动存储的接收到的最新一帧图像) 
+    <img src=".github/images/kpu.jpg" width="850">
 
 </details>
 

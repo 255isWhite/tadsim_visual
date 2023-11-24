@@ -89,12 +89,21 @@ void CameraFun::Step(tx_sim::StepHelper& helper) {
 			        // Assuming camera type is JPEG
         	if (camera.type() == "JPEG") {
 
-				std::fstream of(img_last_, std::ios::out | std::ios::binary);
+				std::fstream of(img_raw_, std::ios::out | std::ios::binary);
 				of.write(camera.image_data().c_str(), camera.image_data().size());
 				of.close();
 
-				cvImg_ = cv::imread(img_last_, cv::IMREAD_COLOR);
-				// 示例一：畸变矫正
+				cvImg_ = cv::imread(img_raw_, cv::IMREAD_COLOR);
+				
+				// // 示例一：畸变矫正
+				// cv::Mat undistort_img;
+				// cv::Mat cameraMatrix = (cv::Mat_<double>(3, 3) << 1900.0,0.0,960.0,0.0,1900.0,540.0,0.0,0.0,1.0);
+				// cv::Mat distCoeffs = (cv::Mat_<double>(1, 5) << -1, 0.5, 0.1, 0.01, 0.1); // k1,k2,p1,p2,k3
+				// // cv::Mat distCoeffs = (cv::Mat_<double>(1, 5) << 0,0,0,0,0);
+				// cv::undistort(cvImg_, undistort_img, cameraMatrix, distCoeffs);
+				// // 获取有效区域
+				// cv::imwrite(img_last_, undistort_img);
+				// cvImg_ = undistort_img.clone();
 
            		// Convert OpenCV image to ROS image message
             	sensor_msgs::ImagePtr ros_image = cv_bridge::CvImage(std_msgs::Header(), "bgr8", cvImg_).toImageMsg();

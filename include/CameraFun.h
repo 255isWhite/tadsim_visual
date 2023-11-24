@@ -4,6 +4,7 @@
 #include <mutex>
 #include <limits.h>
 #include <opencv2/core/core.hpp>
+#include <opencv2/opencv.hpp>
 
 // ros头文件
 #include <ros/ros.h>
@@ -38,5 +39,6 @@ private:
 	image_transport::ImageTransport it_;
 	image_transport::Publisher pub_;
 	const std::string img_last_ = IMAGE_PATH+std::string("/last.jpg");
+	const std::string img_raw_ = IMAGE_PATH+std::string("/raw.jpg");
 };
 
